@@ -1,0 +1,10 @@
+{
+    "sqltools.connections": [
+        {
+            "database": "${workspaceFolder}/src/database/db.sqlite",
+            "dialect": "SQLite",
+            "name": "OmniStack 11.0"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
