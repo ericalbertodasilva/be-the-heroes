@@ -1,6 +1,23 @@
 const connection = require('../database/connection');
 
 module.exports = {
+
+    async index(request, reponse) { 
+        const { page = 1 } = request.query;
+
+        const count = await connection('incidents').count();
+    
+        const incidents = await connection('incidents')
+            .join('ongs','ongs.id', '=','incidents.ong_id')
+            .limit(5).offset((page-1)*5)
+            .select(['incidents.*','ongs.nome','ongs.email','ongs.whatsapp','ongs.city','ongs.uf']);
+
+        reponse.header('X-Total-Count', count[0]['count(*)']);
+   
+        return reponse.json(incidents);
+        
+    },
+
     async create(request, reponse) {
         const {title , description, value } = request.body;
         const ong_id = request.headers.authorization;
@@ -14,18 +31,7 @@ module.exports = {
         return reponse.json({id});
         
     },
-    async index(request, reponse) { 
-        const { page = 1} = request.query;
-
-        const count = await connection('incidents').count();
     
-        const incidents = await connection('incidents').join('ongs','ongs.id', '=','incidents.ong_id').limit(5).offset((page-1)*5).select(['incidents.*','ongs.nome','ongs.email','ongs.whatsapp','ongs.city','ongs.uf']);
-
-        reponse.header('X-Total-Count', count[0]['count(*)']);
-   
-        return reponse.json(incidents);
-        
-    },
     async delete(request, reponse) { 
         const {id} = request.params;
         const ong_id = request.headers.authorization;
